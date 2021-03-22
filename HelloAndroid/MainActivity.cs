@@ -1,18 +1,22 @@
 ﻿using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using AndroidX.AppCompat.App;
 using Android.Widget;
 using System;
+using System.Collections.Generic;
 
 namespace HelloAndroid
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
+        static readonly List<string> phoneNumbers = new List<string>();
         EditText phoneNumberText;
         TextView translatedPhoneword;
         Button translateButton;
+        Button translationHistoryButton;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -25,6 +29,14 @@ namespace HelloAndroid
             translateButton = FindViewById<Button>(Resource.Id.TranslateButton);
 
             translateButton.Click += OnTranslateButtonClick;
+            translationHistoryButton = FindViewById<Button>(Resource.Id.TranslationHistoryButton);
+
+            translationHistoryButton.Click += (sender, e) =>
+            {
+                var intent = new Intent(this, typeof(TranslationHistoryActivity));
+                intent.PutStringArrayListExtra("phone_numbers", phoneNumbers);
+                StartActivity(intent);
+            };
         }
 
         private void OnTranslateButtonClick(object sender, EventArgs e)
@@ -37,6 +49,8 @@ namespace HelloAndroid
             else
             {
                 translatedPhoneword.Text = translatedNumber;
+                phoneNumbers.Add(translatedNumber);
+                translationHistoryButton.Enabled = true;
             }
         }
     }
